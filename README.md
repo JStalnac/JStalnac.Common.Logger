@@ -1,5 +1,6 @@
 # JStalnac.Common.Logger
 A small logging utility for .Net C#
+
 One file, easy to include!
 
 Allows logging on different levels and also to a file.
