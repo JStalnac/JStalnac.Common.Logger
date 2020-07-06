@@ -18,8 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Pastel;
 
@@ -31,34 +33,40 @@ namespace JStalnac.Common.Logger
     public enum LogLevel
     {
         /// <summary>
-        /// Critical log level.
+        /// Debug log level.
         /// </summary>
-        Critical,
+        Debug,
         /// <summary>
-        /// Error log level.
+        /// Information log level.
         /// </summary>
-        Error,
+        Info,
         /// <summary>
         /// Warning log level.
         /// </summary>
         Warning,
         /// <summary>
-        /// Information log level.
+        /// Error log level.
         /// </summary>
-        Information,
+        Error,
         /// <summary>
-        /// Debug log level.
+        /// Important log level.
         /// </summary>
-        Debug
+        Important,
+        /// <summary>
+        /// Critical log level.
+        /// </summary>
+        Critical,
     }
 
     public sealed class Logger
     {
         private readonly string name;
-        private static LogLevel level = LogLevel.Information;
+        private static LogLevel level = LogLevel.Info;
         private static string logFile;
         // I'm not American
         private static string datetimeFormat = "dd/MM/yyyy HH:mm:ssZzzz";
+
+        private static readonly Regex nameRegex = new Regex("[\x00-\x1F\x7F]", RegexOptions.Compiled);
 
         /// <summary>
         /// Initializes a new instance of the Logger class.
@@ -66,7 +74,24 @@ namespace JStalnac.Common.Logger
         /// <param name="name">The name the logger will log messages with.</param>
         public Logger(string name)
         {
-            this.name = name;
+            // Sanitize the input
+            string cleanName = nameRegex.Replace(name, "");
+            if (String.IsNullOrEmpty(cleanName) || String.IsNullOrWhiteSpace(cleanName))
+                throw new ArgumentNullException(nameof(name));
+            this.name = cleanName;
+        }
+
+        [DllImport("kernel32.dll")]
+        static extern bool AllocConsole();
+
+        /// <summary>
+        /// Creates a console window using AllocConsole
+        /// </summary>
+        public static void CreateConsole()
+        {
+            // Only try calling AllocConsole on Windows
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                AllocConsole();
         }
 
         /// <summary>
@@ -92,7 +117,7 @@ namespace JStalnac.Common.Logger
         }
 
         /// <summary>
-        /// Sets the minimum log level. The default level is <see cref="LogLevel.Information"/>
+        /// Sets the minimum log level. The default level is <see cref="LogLevel.Info"/>
         /// </summary>
         /// <param name="logLevel"></param>
         public static void SetLogLevel(LogLevel logLevel) => level = logLevel;
@@ -157,37 +182,37 @@ namespace JStalnac.Common.Logger
         /// <param name="obj">Object</param>
         public void Debug(object obj) => Write(obj, LogLevel.Debug);
         /// <summary>
-        /// Writes a log message on <see cref="LogLevel.Information"/> log level.
+        /// Writes a log message on <see cref="LogLevel.Info"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Info(string message) => Write(message, LogLevel.Information);
+        public void Info(string message) => Write(message, LogLevel.Info);
         /// <summary>
-        /// Writes a log message on <see cref="LogLevel.Information"/> log level including an exception.
+        /// Writes a log message on <see cref="LogLevel.Info"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Info(string message, Exception e) => Write(message, LogLevel.Information, e);
+        public void Info(string message, Exception e) => Write(message, LogLevel.Info, e);
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Infp"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Info(object obj) => Write(obj, LogLevel.Information);
+        public void Info(object obj) => Write(obj, LogLevel.Info);
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Warn(string message) => Write(message, LogLevel.Warning);
+        public void Warning(string message) => Write(message, LogLevel.Warning);
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Warn(string message, Exception e) => Write(message, LogLevel.Warning, e);
+        public void Warning(string message, Exception e) => Write(message, LogLevel.Warning, e);
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Warn(object obj) => Write(obj, LogLevel.Warning);
+        public void Warning(object obj) => Write(obj, LogLevel.Warning);
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Error"/> log level.
         /// </summary>
@@ -224,6 +249,42 @@ namespace JStalnac.Common.Logger
         static object writeLock = new object();
 
         /// <summary>
+        /// Color used for the <see cref="LogLevel.Debug"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color DebugColor { get; set; } = Color.FromArgb(0x0f960d);
+        /// <summary>
+        /// Color used for the <see cref="LogLevel.Info"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color InfoColor { get; set; } = Color.FromArgb(0xeaeaea);
+        /// <summary>
+        /// Color used for the <see cref="LogLevel.Warning"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color WarningColor { get; set; } = Color.FromArgb(0xc6ad0b);
+        /// <summary>
+        /// Color used for the <see cref="LogLevel.Error"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color ErrorColor { get; set; } = Color.FromArgb(0xd30c0c);
+        /// <summary>
+        /// Color used for the <see cref="LogLevel.Important"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color ImportantColor { get; set; } = Color.FromArgb(0x02fcf4);
+        /// <summary>
+        /// Color used for the <see cref="LogLevel.Critical"/> log level.
+        /// </summary>
+        /// <value></value>
+        public static Color CriticalColor { get; set; } = Color.FromArgb(0xff0000);
+        /// <summary>
+        /// Default color used for messages
+        /// </summary>
+        /// <value></value>
+        public static Color DefaultColor { get; set; } = Color.LightGray;
+
+        /// <summary>
         /// Writes a log message using the provided log level including an exception.
         /// </summary>
         /// <param name="message"></param>
@@ -231,7 +292,7 @@ namespace JStalnac.Common.Logger
         /// <param name="exception"></param>
         public void Write(string message, LogLevel level, Exception exception = null)
         {
-            if (Logger.level >= level)
+            if (Logger.level <= level)
             {
                 // This allows us to write safely multiple lines
                 // and to a file.
@@ -268,29 +329,35 @@ namespace JStalnac.Common.Logger
                         Console.WriteLine($"Failed to write to log file: {ex.Message}");
                     }
 
-                    // Write to console
-                    Color color = Color.LightGray;
-
                     // Select color
+                    Color color;
                     switch (level)
                     {
                         // Change these colors if you want to.
                         case LogLevel.Debug:
-                            color = Color.FromArgb(0x0f960d);
+                            color = DebugColor;
                             break;
-                        case LogLevel.Information:
-                            color = Color.FromArgb(0xe5e5e5);
+                        case LogLevel.Info:
+                            color = InfoColor;
                             break;
                         case LogLevel.Warning:
-                            color = Color.FromArgb(0xc6ad0b);
+                            color = WarningColor;
                             break;
                         case LogLevel.Error:
-                            color = Color.FromArgb(0xd30c0c);
+                            color = ErrorColor;
+                            break;
+                        case LogLevel.Important:
+                            color = ImportantColor;
                             break;
                         case LogLevel.Critical:
-                            color = Color.FromArgb(0xff0000);
+                            color = CriticalColor;
+                            break;
+                        default:
+                            color = Color.LightGray;
                             break;
                     }
+
+                    // Write to console
 
                     // dumb optimization
                     prefix = prefix.Pastel(color);
