@@ -1,4 +1,4 @@
-# JStalnac.Common.Logger
+# JStalnac.Common.Logging
 A small logging utility for .Net C#
 
 One file, easy to include!
