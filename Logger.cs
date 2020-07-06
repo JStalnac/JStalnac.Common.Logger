@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Pastel;
 
-namespace JStalnac.Common.Logger
+namespace JStalnac.Common.Logging
 {
     /// <summary>
     /// Log level that the logger uses.
