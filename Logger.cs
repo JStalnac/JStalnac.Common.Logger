@@ -69,6 +69,23 @@ namespace JStalnac.Common.Logging
         private static readonly Regex nameRegex = new Regex("[\x00-\x1F\x7F]", RegexOptions.Compiled);
 
         /// <summary>
+        /// Gets whether there is a console handle. You can create a console handle with <see cref="Logger.CreateConsole"/>
+        /// </summary>
+        /// <value></value>
+        public static bool ConsoleHandleExists { get
+        {
+            try
+            {
+                Console.Title.ToString();
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }}
+
+        /// <summary>
         /// Initializes a new instance of the Logger class.
         /// </summary>
         /// <param name="name">The name the logger will log messages with.</param>
@@ -322,48 +339,52 @@ namespace JStalnac.Common.Logging
                     try
                     {
                         if (!String.IsNullOrEmpty(logFile))
-                            fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x}"));
+                            fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x?.TrimEnd()}"));
                     }
                     catch (IOException ex)
                     {
                         Console.WriteLine($"Failed to write to log file: {ex.Message}");
                     }
 
-                    // Select color
-                    Color color;
-                    switch (level)
+                    // Don't try to write if there is nothing to write to.
+                    if (ConsoleHandleExists)
                     {
-                        // Change these colors if you want to.
-                        case LogLevel.Debug:
-                            color = DebugColor;
-                            break;
-                        case LogLevel.Info:
-                            color = InfoColor;
-                            break;
-                        case LogLevel.Warning:
-                            color = WarningColor;
-                            break;
-                        case LogLevel.Error:
-                            color = ErrorColor;
-                            break;
-                        case LogLevel.Important:
-                            color = ImportantColor;
-                            break;
-                        case LogLevel.Critical:
-                            color = CriticalColor;
-                            break;
-                        default:
-                            color = Color.LightGray;
-                            break;
+                        // Select color
+                        Color color;
+                        switch (level)
+                        {
+                            // Change these colors if you want to.
+                            case LogLevel.Debug:
+                                color = DebugColor;
+                                break;
+                            case LogLevel.Info:
+                                color = InfoColor;
+                                break;
+                            case LogLevel.Warning:
+                                color = WarningColor;
+                                break;
+                            case LogLevel.Error:
+                                color = ErrorColor;
+                                break;
+                            case LogLevel.Important:
+                                color = ImportantColor;
+                                break;
+                            case LogLevel.Critical:
+                                color = CriticalColor;
+                                break;
+                            default:
+                                color = Color.LightGray;
+                                break;
+                        }
+
+                        // Write to console
+
+                        // dumb optimization
+                        prefix = prefix.Pastel(color);
+                        foreach (string line in lines)
+                            // Prevent ANSI escape sequences in the message
+                            Console.WriteLine($"{prefix} {line.Replace("\x1b", "")}");
                     }
-
-                    // Write to console
-
-                    // dumb optimization
-                    prefix = prefix.Pastel(color);
-                    foreach (string line in lines)
-                        // Prevent ANSI escape sequences in the message
-                        Console.WriteLine($"{prefix} {line.Replace("\x1b", "")}");
 
                     // End write to file
                     if (fileWrite != null)
