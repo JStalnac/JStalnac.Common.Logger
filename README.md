@@ -78,3 +78,9 @@ logger.Info("Bye bye!");
 //    [07/04/2020 17:00:13] [Main] [Information] Bye bye!
 // Funny that you can see when I wrote this
 ```
+
+#### Creating a new console window (Windows only)
+Useful in GUI application that don't have consoles.
+```cs
+Logger.CreateConsole();
+```
