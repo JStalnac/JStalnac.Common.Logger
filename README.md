@@ -80,7 +80,7 @@ logger.Info("Bye bye!");
 ```
 
 #### Creating a new console window (Windows only)
-Useful in GUI application that don't have consoles.
+Useful in GUI applications that don't have consoles.
 ```cs
 Logger.CreateConsole();
 ```
