@@ -6,6 +6,7 @@ One file, easy to include!
 Allows logging on different levels and also to a file.
 
 ## Requirements
+ - .NET Standard 2.1
  - [Pastel](https://www.nuget.org/packages/Pastel)
     - Install via 
         - .Net CLI:
