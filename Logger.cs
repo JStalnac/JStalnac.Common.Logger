@@ -231,6 +231,22 @@ namespace JStalnac.Common.Logging
         /// <param name="obj">Object</param>
         public void Error(object obj) => Write(obj, LogLevel.Error);
         /// <summary>
+        /// Writes a log message on <see cref="LogLevel.Important"/> log level.
+        /// </summary>
+        /// <param name="message">Log message</param>
+        public void Important(string message) => Write(message, LogLevel.Important);
+        /// <summary>
+        /// Writes a log message on <see cref="LogLevel.Important"/> log level including an exception.
+        /// </summary>
+        /// <param name="message">Log message</param>
+        /// <param name ="e">Exception</param>
+        public void Important(string message, Exception e) => Write(message, LogLevel.Important, e);
+        /// <summary>
+        /// Writes a log message on <see cref="LogLevel.Important"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
+        /// </summary>
+        /// <param name="obj">Object</param>
+        public void Important(object obj) => Write(obj, LogLevel.Important);
+        /// <summary>
         /// Writes a log message on <see cref="LogLevel.Critical"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
