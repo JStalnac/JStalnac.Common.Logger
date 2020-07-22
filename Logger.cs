@@ -345,82 +345,17 @@ namespace JStalnac.Common.Logging
             Write(obj, LogLevel.Critical);
         }
 
-        #region Custom colors
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Debug"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color DebugColor { get; set; } = Color.FromArgb(0x0f960d);
-
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Info"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color InfoColor { get; set; } = Color.FromArgb(0xeaeaea);
-
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Warning"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color WarningColor { get; set; } = Color.FromArgb(0xc6ad0b);
-
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Error"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color ErrorColor { get; set; } = Color.FromArgb(0xd30c0c);
-
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Important"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color ImportantColor { get; set; } = Color.FromArgb(0x02fcf4);
-
-        /// <summary>
-        /// Color used for the <see cref="LogLevel.Critical"/> log level.
-        /// </summary>
-        /// <value></value>
-        public static Color CriticalColor { get; set; } = Color.FromArgb(0xff0000);
-
-        /// <summary>
-        /// Default color used for messages
-        /// </summary>
-        /// <value></value>
-        public static Color DefaultColor { get; set; } = Color.LightGray;
-        #endregion
-
-        private static Color GetColor(LogLevel logLevel)
-        {
-            // Select color
-            Color color;
-            switch (level)
+        private static Color GetColor(LogLevel logLevel) =>
+            logLevel switch
             {
-                // Change these colors if you want to.
-                case LogLevel.Debug:
-                    color = DebugColor;
-                    break;
-                case LogLevel.Info:
-                    color = InfoColor;
-                    break;
-                case LogLevel.Warning:
-                    color = WarningColor;
-                    break;
-                case LogLevel.Error:
-                    color = ErrorColor;
-                    break;
-                case LogLevel.Important:
-                    color = ImportantColor;
-                    break;
-                case LogLevel.Critical:
-                    color = CriticalColor;
-                    break;
-                default:
-                    color = DefaultColor;
-                    break;
-            }
-
-            return color;
-        }
+                LogLevel.Debug => Color.FromArgb(0x0f960d),
+                LogLevel.Info => Color.FromArgb(0xeaeaea),
+                LogLevel.Warning => Color.FromArgb(0xc6ad0b),
+                LogLevel.Error => Color.FromArgb(0xd30c0c),
+                LogLevel.Important => Color.FromArgb(0x02fcf4),
+                LogLevel.Critical => Color.FromArgb(0xff0000),
+                _ => Color.LightGray
+            };
 
         private static object writeLock = new object();
         
@@ -431,7 +366,8 @@ namespace JStalnac.Common.Logging
         /// <param name="fore">Foreground color</param>
         /// <param name="back">Background color</param>
         /// <param name="exception">Exception</param>
-        public void Write(string message, Color fore, Color? back = null, Exception exception = null)
+        /// <param name="logLevel">Log level. Don't use this manually.</param>
+        public void Write(string message, Color fore, Color? back = null, Exception exception = null, LogLevel logLevel = LogLevel.Info)
         {
             // This allows us to write safely multiple lines
             // and to a file.
@@ -454,16 +390,18 @@ namespace JStalnac.Common.Logging
                 if (exception != null)
                     lines.AddRange(exception.ToString().Split('\n'));
 
-                string prefix = $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{level}]";
+                string prefix = $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{logLevel}]";
 
                 // Begin write to file
                 Task fileWrite = null;
                 try
                 {
                     if (!string.IsNullOrEmpty(logFile))
+                    {
                         fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x?.TrimEnd()}"));
+                    }
                 }
-                catch (IOException ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"Failed to write to log file: {ex.Message}");
                 }
@@ -492,8 +430,8 @@ namespace JStalnac.Common.Logging
         /// <param name="exception">Exception</param>
         public void Write(string message, LogLevel logLevel, Exception exception = null)
         {
-            if (Logger.level <= logLevel)
-                Write(message, GetColor(logLevel), exception: exception);
+            if (level <= logLevel)
+                Write(message, GetColor(logLevel), exception: exception, logLevel: logLevel);
         }
 
         /// <summary>
