@@ -36,33 +36,40 @@ namespace JStalnac.Common.Logging
         /// Debug log level.
         /// </summary>
         Debug,
+
         /// <summary>
         /// Information log level.
         /// </summary>
         Info,
+
         /// <summary>
         /// Warning log level.
         /// </summary>
         Warning,
+
         /// <summary>
         /// Error log level.
         /// </summary>
         Error,
+
         /// <summary>
         /// Important log level.
         /// </summary>
         Important,
+
         /// <summary>
         /// Critical log level.
         /// </summary>
-        Critical,
+        Critical
     }
 
     public sealed class Logger
     {
         private readonly string name;
         private static LogLevel level = LogLevel.Info;
+
         private static string logFile;
+
         // I'm not American
         private static string datetimeFormat = "dd/MM/yyyy HH:mm:ssZzzz";
 
@@ -76,13 +83,13 @@ namespace JStalnac.Common.Logging
         {
             // Sanitize the input
             string cleanName = nameRegex.Replace(name, "");
-            if (String.IsNullOrEmpty(cleanName) || String.IsNullOrWhiteSpace(cleanName))
+            if (string.IsNullOrEmpty(cleanName) || string.IsNullOrWhiteSpace(cleanName))
                 throw new ArgumentNullException(nameof(name));
             this.name = cleanName;
         }
 
         [DllImport("kernel32.dll")]
-        static extern bool AllocConsole();
+        private static extern bool AllocConsole();
 
         /// <summary>
         /// Creates a console window using AllocConsole.
@@ -101,7 +108,7 @@ namespace JStalnac.Common.Logging
         /// <param name="path"></param>
         public static void SetLogFile(string path)
         {
-            if (String.IsNullOrEmpty(path) || String.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
 
             try
@@ -121,7 +128,10 @@ namespace JStalnac.Common.Logging
         /// Sets the minimum log level. The default level is <see cref="LogLevel.Info"/>
         /// </summary>
         /// <param name="logLevel"></param>
-        public static void SetLogLevel(LogLevel logLevel) => level = logLevel;
+        public static void SetLogLevel(LogLevel logLevel)
+        {
+            level = logLevel;
+        }
 
         /// <summary>
         /// Sets the datetime format used.
@@ -129,7 +139,7 @@ namespace JStalnac.Common.Logging
         /// <param name="format"></param>
         public static void SetDateTimeFormat(string format)
         {
-            if (String.IsNullOrEmpty(format) || String.IsNullOrWhiteSpace(format))
+            if (string.IsNullOrEmpty(format) || string.IsNullOrWhiteSpace(format))
                 throw new ArgumentException(nameof(format));
 
             try
@@ -144,6 +154,7 @@ namespace JStalnac.Common.Logging
             {
                 throw new FormatException("Invalid datetime");
             }
+
             datetimeFormat = format;
         }
 
@@ -170,232 +181,339 @@ namespace JStalnac.Common.Logging
         /// Writes a log message on <see cref="LogLevel.Debug"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Debug(string message) => Write(message, LogLevel.Debug);
+        public void Debug(string message)
+        {
+            Write(message, LogLevel.Debug);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Debug"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Debug(string message, Exception e) => Write(message, LogLevel.Debug, e);
+        public void Debug(string message, Exception e)
+        {
+            Write(message, LogLevel.Debug, e);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Debug"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Debug(object obj) => Write(obj, LogLevel.Debug);
+        public void Debug(object obj)
+        {
+            Write(obj, LogLevel.Debug);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Info"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Info(string message) => Write(message, LogLevel.Info);
+        public void Info(string message)
+        {
+            Write(message, LogLevel.Info);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Info"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Info(string message, Exception e) => Write(message, LogLevel.Info, e);
+        public void Info(string message, Exception e)
+        {
+            Write(message, LogLevel.Info, e);
+        }
+
         /// <summary>
-        /// Writes a log message on <see cref="LogLevel.Infp"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
+        /// Writes a log message on <see cref="LogLevel.Info"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Info(object obj) => Write(obj, LogLevel.Info);
+        public void Info(object obj)
+        {
+            Write(obj, LogLevel.Info);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Warning(string message) => Write(message, LogLevel.Warning);
+        public void Warning(string message)
+        {
+            Write(message, LogLevel.Warning);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Warning(string message, Exception e) => Write(message, LogLevel.Warning, e);
+        public void Warning(string message, Exception e)
+        {
+            Write(message, LogLevel.Warning, e);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Warning"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Warning(object obj) => Write(obj, LogLevel.Warning);
+        public void Warning(object obj)
+        {
+            Write(obj, LogLevel.Warning);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Error"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Error(string message) => Write(message, LogLevel.Error);
+        public void Error(string message)
+        {
+            Write(message, LogLevel.Error);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Error"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Error(string message, Exception e) => Write(message, LogLevel.Error, e);
+        public void Error(string message, Exception e)
+        {
+            Write(message, LogLevel.Error, e);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Error"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Error(object obj) => Write(obj, LogLevel.Error);
+        public void Error(object obj)
+        {
+            Write(obj, LogLevel.Error);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Important"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Important(string message) => Write(message, LogLevel.Important);
+        public void Important(string message)
+        {
+            Write(message, LogLevel.Important);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Important"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Important(string message, Exception e) => Write(message, LogLevel.Important, e);
+        public void Important(string message, Exception e)
+        {
+            Write(message, LogLevel.Important, e);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Important"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Important(object obj) => Write(obj, LogLevel.Important);
+        public void Important(object obj)
+        {
+            Write(obj, LogLevel.Important);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Critical"/> log level.
         /// </summary>
         /// <param name="message">Log message</param>
-        public void Critical(string message) => Write(message, LogLevel.Critical);
+        public void Critical(string message)
+        {
+            Write(message, LogLevel.Critical);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Critical"/> log level including an exception.
         /// </summary>
         /// <param name="message">Log message</param>
         /// <param name ="e">Exception</param>
-        public void Critical(string message, Exception e) => Write(message, LogLevel.Critical, e);
+        public void Critical(string message, Exception e)
+        {
+            Write(message, LogLevel.Critical, e);
+        }
+
         /// <summary>
         /// Writes a log message on <see cref="LogLevel.Critical"/> log level using the provided object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        public void Critical(object obj) => Write(obj, LogLevel.Critical);
+        public void Critical(object obj)
+        {
+            Write(obj, LogLevel.Critical);
+        }
 
-        static object writeLock = new object();
-
+        #region Custom colors
         /// <summary>
         /// Color used for the <see cref="LogLevel.Debug"/> log level.
         /// </summary>
         /// <value></value>
         public static Color DebugColor { get; set; } = Color.FromArgb(0x0f960d);
+
         /// <summary>
         /// Color used for the <see cref="LogLevel.Info"/> log level.
         /// </summary>
         /// <value></value>
         public static Color InfoColor { get; set; } = Color.FromArgb(0xeaeaea);
+
         /// <summary>
         /// Color used for the <see cref="LogLevel.Warning"/> log level.
         /// </summary>
         /// <value></value>
         public static Color WarningColor { get; set; } = Color.FromArgb(0xc6ad0b);
+
         /// <summary>
         /// Color used for the <see cref="LogLevel.Error"/> log level.
         /// </summary>
         /// <value></value>
         public static Color ErrorColor { get; set; } = Color.FromArgb(0xd30c0c);
+
         /// <summary>
         /// Color used for the <see cref="LogLevel.Important"/> log level.
         /// </summary>
         /// <value></value>
         public static Color ImportantColor { get; set; } = Color.FromArgb(0x02fcf4);
+
         /// <summary>
         /// Color used for the <see cref="LogLevel.Critical"/> log level.
         /// </summary>
         /// <value></value>
         public static Color CriticalColor { get; set; } = Color.FromArgb(0xff0000);
+
         /// <summary>
         /// Default color used for messages
         /// </summary>
         /// <value></value>
         public static Color DefaultColor { get; set; } = Color.LightGray;
+        #endregion
+
+        private static Color GetColor(LogLevel logLevel)
+        {
+            // Select color
+            Color color;
+            switch (level)
+            {
+                // Change these colors if you want to.
+                case LogLevel.Debug:
+                    color = DebugColor;
+                    break;
+                case LogLevel.Info:
+                    color = InfoColor;
+                    break;
+                case LogLevel.Warning:
+                    color = WarningColor;
+                    break;
+                case LogLevel.Error:
+                    color = ErrorColor;
+                    break;
+                case LogLevel.Important:
+                    color = ImportantColor;
+                    break;
+                case LogLevel.Critical:
+                    color = CriticalColor;
+                    break;
+                default:
+                    color = DefaultColor;
+                    break;
+            }
+
+            return color;
+        }
+
+        private static object writeLock = new object();
+        
+        /// <summary>
+        /// Writes a log message using a custom color including an exception.
+        /// </summary>
+        /// <param name="message">Message</param>
+        /// <param name="fore">Foreground color</param>
+        /// <param name="back">Background color</param>
+        /// <param name="exception">Exception</param>
+        public void Write(string message, Color fore, Color? back = null, Exception exception = null)
+        {
+            // This allows us to write safely multiple lines
+            // and to a file.
+            lock (writeLock)
+            {
+                if (message == null || string.IsNullOrEmpty(message.Trim()))
+                    if (exception == null)
+                        message = "null"; // No message, no exception
+
+                var lines = new List<string>();
+
+                // Append message
+                if (message != null)
+                {
+                    message = message.Trim();
+                    lines.AddRange(message.Split('\n'));
+                }
+
+                // Append exception
+                if (exception != null)
+                    lines.AddRange(exception.ToString().Split('\n'));
+
+                string prefix = $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{level}]";
+
+                // Begin write to file
+                Task fileWrite = null;
+                try
+                {
+                    if (!string.IsNullOrEmpty(logFile))
+                        fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x?.TrimEnd()}"));
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Failed to write to log file: {ex.Message}");
+                }
+
+                // Write to console
+                
+                // Coloring
+                prefix = prefix.Pastel(fore);
+                if (back.HasValue)
+                    prefix = prefix.PastelBg(back.Value);
+
+                foreach (string line in lines)
+                    // Prevent ANSI escape sequences in the message
+                    Console.WriteLine($"{prefix} {line.Replace("\x1b", "")}");
+
+                // End write to file
+                fileWrite?.Wait();
+            }
+        }
 
         /// <summary>
         /// Writes a log message using the provided log level including an exception.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="level"></param>
-        /// <param name="exception"></param>
-        public void Write(string message, LogLevel level, Exception exception = null)
+        /// <param name="message">Message</param>
+        /// <param name="logLevel">Log level</param>
+        /// <param name="exception">Exception</param>
+        public void Write(string message, LogLevel logLevel, Exception exception = null)
         {
-            if (Logger.level <= level)
-            {
-                // This allows us to write safely multiple lines
-                // and to a file.
-                lock(writeLock)
-                {
-                    if (message == null || String.IsNullOrEmpty(message.Trim()))
-                        if (exception == null)
-                            message = "null"; // No message, no exception
-
-                    var lines = new List<string>();
-
-                    // Append message
-                    if (message != null)
-                    {
-                        message = message.Trim();
-                        lines.AddRange(message.Split('\n'));
-                    }
-
-                    // Append exception
-                    if (exception != null)
-                        lines.AddRange(exception.ToString().Split('\n'));
-
-                    string prefix = $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{level}]";
-
-                    // Begin write to file
-                    Task fileWrite = null;
-                    try
-                    {
-                        if (!String.IsNullOrEmpty(logFile))
-                            fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x?.TrimEnd()}"));
-                    }
-                    catch (IOException ex)
-                    {
-                        Console.WriteLine($"Failed to write to log file: {ex.Message}");
-                    }
-
-                    // Select color
-                    Color color;
-                    switch (level)
-                    {
-                        // Change these colors if you want to.
-                        case LogLevel.Debug:
-                            color = DebugColor;
-                            break;
-                        case LogLevel.Info:
-                            color = InfoColor;
-                            break;
-                        case LogLevel.Warning:
-                            color = WarningColor;
-                            break;
-                        case LogLevel.Error:
-                            color = ErrorColor;
-                            break;
-                        case LogLevel.Important:
-                            color = ImportantColor;
-                            break;
-                        case LogLevel.Critical:
-                            color = CriticalColor;
-                            break;
-                        default:
-                            color = Color.LightGray;
-                            break;
-                    }
-
-                    // Write to console
-
-                    // dumb optimization
-                    prefix = prefix.Pastel(color);
-                    foreach (string line in lines)
-                        // Prevent ANSI escape sequences in the message
-                        Console.WriteLine($"{prefix} {line.Replace("\x1b", "")}");
-                    
-                    // End write to file
-                    if (fileWrite != null)
-                        fileWrite.Wait();
-                }
-            }
+            if (Logger.level <= logLevel)
+                Write(message, GetColor(logLevel), exception: exception);
         }
+
         /// <summary>
         /// Writes a log message using an object's <see cref="System.Object.ToString"/> method.
         /// </summary>
         /// <param name="obj">Object</param>
-        /// <param name="level">Log level</param>
-        public void Write(object obj, LogLevel level)
+        /// <param name="logLevel">Log level</param>
+        public void Write(object obj, LogLevel logLevel)
         {
-            Write(obj?.ToString(), level, null);
+            Write(obj?.ToString(), logLevel, null);
+        }
+        /// <summary>
+        /// Writes a log message in a custom color using an object's <see cref="System.Object.ToString"/> method.
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <param name="fore">Foreground color</param>
+        /// <param name="back">Background color</param>
+        public void Write(object obj, Color fore, Color? back = null)
+        {
+            Write(obj?.ToString(), fore, back);
         }
     }
 }
