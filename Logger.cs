@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 JStalnac
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -358,7 +358,7 @@ namespace JStalnac.Common.Logging
             };
 
         private static object writeLock = new object();
-        
+
         /// <summary>
         /// Writes a log message using a custom color including an exception.
         /// </summary>
@@ -398,7 +398,9 @@ namespace JStalnac.Common.Logging
                 {
                     if (!string.IsNullOrEmpty(logFile))
                     {
-                        fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{prefix} {x?.TrimEnd()}"));
+                        // For safety reasons, the variable might get modified before it's written to the log file
+                        string p = prefix;
+                        fileWrite = File.AppendAllLinesAsync(logFile, lines.Select(x => $"{p} {x?.TrimEnd()}"));
                     }
                 }
                 catch (Exception ex)
@@ -407,7 +409,7 @@ namespace JStalnac.Common.Logging
                 }
 
                 // Write to console
-                
+
                 // Coloring
                 prefix = prefix.Pastel(fore);
                 if (back.HasValue)
