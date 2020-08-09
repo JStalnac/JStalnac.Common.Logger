@@ -83,7 +83,7 @@ namespace JStalnac.Common.Logging
         {
             // Sanitize the input
             string cleanName = nameRegex.Replace(name, "");
-            if (string.IsNullOrEmpty(cleanName) || string.IsNullOrWhiteSpace(cleanName))
+            if (String.IsNullOrEmpty(cleanName) || String.IsNullOrWhiteSpace(cleanName))
                 throw new ArgumentNullException(nameof(name));
             this.name = cleanName;
         }
@@ -108,7 +108,7 @@ namespace JStalnac.Common.Logging
         /// <param name="path"></param>
         public static void SetLogFile(string path)
         {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrWhiteSpace(path))
+            if (String.IsNullOrEmpty(path) || String.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
 
             try
@@ -139,7 +139,7 @@ namespace JStalnac.Common.Logging
         /// <param name="format"></param>
         public static void SetDateTimeFormat(string format)
         {
-            if (string.IsNullOrEmpty(format) || string.IsNullOrWhiteSpace(format))
+            if (String.IsNullOrEmpty(format) || String.IsNullOrWhiteSpace(format))
                 throw new ArgumentException(nameof(format));
 
             try
@@ -164,7 +164,7 @@ namespace JStalnac.Common.Logging
         /// <returns></returns>
         public static Logger GetLogger<T>(T type)
         {
-            return new Logger(typeof(T).FullName);
+            return new Logger(typeof(T).Name);
         }
 
         /// <summary>
@@ -345,8 +345,9 @@ namespace JStalnac.Common.Logging
             Write(obj, LogLevel.Critical);
         }
 
-        private static Color GetColor(LogLevel logLevel) =>
-            logLevel switch
+        private static Color GetColor(LogLevel logLevel)
+        {
+            return logLevel switch
             {
                 LogLevel.Debug => Color.FromArgb(0x0f960d),
                 LogLevel.Info => Color.FromArgb(0xeaeaea),
@@ -356,6 +357,7 @@ namespace JStalnac.Common.Logging
                 LogLevel.Critical => Color.FromArgb(0xff0000),
                 _ => Color.LightGray
             };
+        }
 
         private static object writeLock = new object();
 
@@ -367,15 +369,18 @@ namespace JStalnac.Common.Logging
         /// <param name="back">Background color</param>
         /// <param name="exception">Exception</param>
         /// <param name="logLevel">Log level. Don't use this manually.</param>
-        public void Write(string message, Color fore, Color? back = null, Exception exception = null, LogLevel logLevel = LogLevel.Info)
+        public void Write(string message, Color fore, Color? back = null, Exception exception = null,
+            LogLevel logLevel = LogLevel.Info)
         {
             // This allows us to write safely multiple lines
             // and to a file.
             lock (writeLock)
             {
-                if (message == null || string.IsNullOrEmpty(message.Trim()))
+                if (message == null || String.IsNullOrEmpty(message.Trim()))
+                {
                     if (exception == null)
                         message = "null"; // No message, no exception
+                }
 
                 var lines = new List<string>();
 
@@ -390,13 +395,14 @@ namespace JStalnac.Common.Logging
                 if (exception != null)
                     lines.AddRange(exception.ToString().Split('\n'));
 
-                string prefix = $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{logLevel}]";
+                string prefix =
+                    $"[{DateTime.Now.ToString(datetimeFormat, CultureInfo.InvariantCulture)}] [{name}] [{logLevel}]";
 
                 // Begin write to file
                 Task fileWrite = null;
                 try
                 {
-                    if (!string.IsNullOrEmpty(logFile))
+                    if (!String.IsNullOrEmpty(logFile))
                     {
                         // For safety reasons, the variable might get modified before it's written to the log file
                         string p = prefix;
@@ -445,6 +451,7 @@ namespace JStalnac.Common.Logging
         {
             Write(obj?.ToString(), logLevel, null);
         }
+
         /// <summary>
         /// Writes a log message in a custom color using an object's <see cref="System.Object.ToString"/> method.
         /// </summary>
