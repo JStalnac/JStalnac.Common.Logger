@@ -168,6 +168,16 @@ namespace JStalnac.Common.Logging
         }
 
         /// <summary>
+        /// Gets a new logger for the specified type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Logger GetLogger<T>()
+        {
+            return new Logger(typeof(T).Name);
+        }
+
+        /// <summary>
         /// Gets a new logger with the specified name.
         /// </summary>
         /// <param name="name"></param>
