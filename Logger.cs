@@ -357,32 +357,16 @@ namespace JStalnac.Common.Logging
 
         private static Color GetColor(LogLevel logLevel)
         {
-            Color result;
-            switch (logLevel)
+            return logLevel switch
             {
-                case LogLevel.Debug:
-                    result = Color.FromArgb(0x0f960d);
-                    break;
-                case LogLevel.Info:
-                    result = Color.FromArgb(0xeaeaea);
-                    break;
-                case LogLevel.Warning:
-                    result = Color.FromArgb(0xc6ad0b);
-                    break;
-                case LogLevel.Error:
-                    result = Color.FromArgb(0xd30c0c);
-                    break;
-                case LogLevel.Important:
-                    result = Color.FromArgb(0x02fcf4);
-                    break;
-                case LogLevel.Critical:
-                    result = Color.FromArgb(0xff0000);
-                    break;
-                default:
-                    result = Color.LightGray;
-                    break;
+                LogLevel.Debug => Color.FromArgb(0x0f960d),
+                LogLevel.Info => Color.FromArgb(0xeaeaea),
+                LogLevel.Warning => Color.FromArgb(0xc6ad0b),
+                LogLevel.Error => Color.FromArgb(0xd30c0c),
+                LogLevel.Important => Color.FromArgb(0x02fcf4),
+                LogLevel.Critical => Color.FromArgb(0xff0000),
+                _ => Color.LightGray
             };
-            return result;
         }
 
         private static object writeLock = new object();
