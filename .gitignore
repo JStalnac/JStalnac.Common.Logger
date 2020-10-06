@@ -1,0 +1,12 @@
+# IDE
+.vs/
+.idea/
+.vscode/
+
+# Builds
+bin/
+obj/
+
+# The test project
+Program.cs
+*.csproj
