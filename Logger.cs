@@ -345,7 +345,7 @@ namespace JStalnac.Common.Logging
         /// <param name="exception">Exception</param>
         public void Write(string message, LogLevel logLevel, Exception exception = null)
         {
-            if (MinimumLogLevel >= logLevel)
+            if (MinimumLogLevel > logLevel)
                 return;
             Write(message, GetColor(logLevel), exception: exception, logLevel: logLevel);
         }
