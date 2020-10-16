@@ -85,3 +85,54 @@ Useful in GUI applications that don't have consoles.
 ```cs
 Logger.CreateConsole();
 ```
+
+#### Using Microsoft.Extensions.Logging
+ - NOTE: Requires [Microsoft.Extensions.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Logging)
+
+Example program
+```cs
+// using ...
+
+namespace Test
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Create host
+            using (var host = CreateHostBuilder().Build())
+            {
+                var logger = Logger.GetLogger<Program>();
+
+                // Start
+                logger.Info("Starting host");
+                host.Start();
+
+                // Get logger
+                var log = host.Services.GetRequiredService<ILogger<Program>>();
+                log.LogInformation("Hello World!");
+
+                host.WaitForShutdown();
+            }
+        }
+
+        public static IHostBuilder CreateHostBuilder()
+            => Host.CreateDefaultBuilder()
+                .ConfigureLogging(options =>
+                {
+                    // Clear the default logger provider
+                    options.ClearProviders();
+                    // Add custom logging
+                    options.AddJStalnacLogging();
+                });
+    }
+}
+
+// Output:
+//      [16/10/2020 17:57:36Z+03:00] [Program] [Info] Starting host
+//      [16/10/2020 17:57:36Z+03:00] [Microsoft.Hosting.Lifetime] [Info] Application started. Press Ctrl+C to shut down.
+//      [16/10/2020 17:57:36Z+03:00] [Microsoft.Hosting.Lifetime] [Info] Hosting environment: Production
+//      [16/10/2020 17:57:36Z+03:00] [Microsoft.Hosting.Lifetime] [Info] Content root path: ...
+//      [16/10/2020 17:57:36Z+03:00] [Test.Program] [Info] Hello World!
+//      [16/10/2020 17:57:42Z+03:00] [Microsoft.Hosting.Lifetime] [Info] Application is shutting down...
+```
