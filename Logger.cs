@@ -129,6 +129,12 @@ namespace JStalnac.Common.Logging
                 datetimeFormat = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets whether the full namespace and name of a type should be used or just the name when naming loggers.
+        /// </summary>
+        public static bool UseTypeFullName { get; set; }
+        
         // I'm not American
         private static string datetimeFormat = "dd/MM/yyyy HH:mm:ssZzzz";
 
@@ -172,14 +178,14 @@ namespace JStalnac.Common.Logging
         /// Gets a new logger for the specified type.
         /// </summary>
         /// <returns></returns>
-        public static Logger GetLogger<T>(T type) => new Logger(typeof(T).Name);
+        public static Logger GetLogger<T>(T type) => GetLogger<T>();
 
         /// <summary>
         /// Gets a new logger for the specified type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Logger GetLogger<T>() => new Logger(typeof(T).Name);
+        public static Logger GetLogger<T>() => UseTypeFullName ? new Logger(typeof(T).FullName) : new Logger(typeof(T).Name);
 
         /// <summary>
         /// Gets a new logger with the specified name.
